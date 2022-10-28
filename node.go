@@ -166,6 +166,18 @@ func NewMergeOutputsNode(name string, streamSpec []*Stream) *Node {
 		"MergeOutputsNode")
 }
 
+func NewMapOutputsNode(name string, streamSpec []*Stream, kwargs KwArgs) *Node {
+	return NewNode(streamSpec,
+		name,
+		sets.NewString("OutputStream"),
+		"OutputStream",
+		1,
+		-1,
+		nil,
+		kwargs,
+		"MapOutputsNode")
+}
+
 func NewGlobalNode(name string, streamSpec []*Stream, args []string, kwargs KwArgs) *Node {
 	return NewNode(streamSpec,
 		name,

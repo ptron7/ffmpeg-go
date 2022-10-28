@@ -115,7 +115,7 @@ func _getGlobalArgs(node *Node) []string {
 }
 
 func _getOutputArgs(node *Node, streamNameMap map[string]string) []string {
-	if node.name != "output" {
+	if node.name != "output" && node.name != "map_output" {
 		panic("Unsupported output node")
 	}
 	var args []string
@@ -124,7 +124,7 @@ func _getOutputArgs(node *Node, streamNameMap map[string]string) []string {
 	}
 	for _, e := range node.GetInComingEdges() {
 		streamName := formatInputStreamName(streamNameMap, e, true)
-		if streamName != "0" || len(node.GetInComingEdges()) > 1 {
+		if (streamName != "0" || len(node.GetInComingEdges()) > 1) && streamName != "[]" {
 			args = append(args, "-map", streamName)
 		}
 	}
@@ -145,7 +145,9 @@ func _getOutputArgs(node *Node, streamNameMap map[string]string) []string {
 	}
 
 	args = append(args, ConvertKwargsToCmdLineArgs(kwargs)...)
-	args = append(args, filename)
+	if filename != "" {
+		args = append(args, filename)
+	}
 	return args
 }
 
@@ -171,6 +173,8 @@ func (s *Stream) GetArgs() []string {
 			streamNameMap[fmt.Sprintf("%d", n.Hash())] = fmt.Sprintf("%d", len(inputNodes))
 			inputNodes = append(inputNodes, n)
 		case "OutputNode":
+			outputNodes = append(outputNodes, n)
+		case "MapOutputsNode":
 			outputNodes = append(outputNodes, n)
 		case "GlobalNode":
 			globalNodes = append(globalNodes, n)
